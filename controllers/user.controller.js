@@ -12,8 +12,6 @@ const { capitalizeFirstLetter } = require("../helper/help");
 const { generateHashPass } = require("../helper/generatePassword");
 const sendEmails = require("../helper/sendMails");
 const User = db.User;
-const EmailManage = db.EmailManage;
-const Site = db.Site;
 const fs = require("fs");
 
 exports.getUserById = async (req, res) => {
@@ -105,8 +103,7 @@ exports.registration = async (req, res) => {
                     password ? password : process.env.TEMPPASS
                 ),
             });
-
-
+            
             return res.status(201).json(user);
         }
     }

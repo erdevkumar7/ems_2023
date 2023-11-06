@@ -16,6 +16,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.User = require("./user.model")(sequelize, Sequelize);
+db.Email =require("./email.model")(sequelize, Sequelize);
 
 //export deb
 module.exports = db;
