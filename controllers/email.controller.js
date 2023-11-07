@@ -25,21 +25,35 @@ exports.sendEmail = async (req, res) => {
         res.status(401).json("Unauthorized access,login token required");
     } else {
         try {
-            const emailCreated = await Email.create({
-                user_id,
-                to_email,
+            const send = require("gmail-send")({
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASS,
+                to: to_email,
                 subject,
-                cc,
-                bcc,
-                content,
-                attachment,
-                is_read,
-                created_by,
-                updated_by,
-                reply_by,
-            })
-
-            return res.status(201).json(emailCreated);
+            });
+            const { full } = await send({
+                html: `${content}`,
+                // files: [filepath],
+            });
+            // res.status(200).json(result);
+            if (full.messageId === '') {
+                res.status(400).json('Unable to sent email');
+            } else {
+                const emailCreated = await Email.create({
+                    user_id,
+                    to_email,
+                    subject,
+                    cc,
+                    bcc,
+                    content,
+                    attachment,
+                    is_read,
+                    created_by,
+                    updated_by,
+                    reply_by,
+                })
+                return res.status(201).json(emailCreated);
+            }
         } catch (e) {
             res.status(400).json(e);
         }

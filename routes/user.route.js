@@ -4,7 +4,9 @@ const {
   getUserById,
   registration,
   loginUser,
-  updateUser
+  updateUser,
+  resetPassword,
+  forgotPassword
 } = require("../controllers/user.controller");
 // const { webProtection } = require("../helper/auth");
 const router = express.Router();
@@ -13,5 +15,7 @@ router.get('/getuser/:id', getUserById)
 router.post('/registration', registration)
 router.post('/loginuser' ,loginUser)
 router.put('/updateuser/:id', upload.single("profile_pic") , updateUser)
+router.post('/resetpassword', resetPassword)
+router.post('/forgotpassword', forgotPassword)
 
 module.exports = router;

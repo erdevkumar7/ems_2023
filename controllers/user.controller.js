@@ -103,7 +103,7 @@ exports.registration = async (req, res) => {
                     password ? password : process.env.TEMPPASS
                 ),
             });
-            
+
             return res.status(201).json(user);
         }
     }
@@ -193,6 +193,101 @@ exports.updateUser = async (req, res) => {
 
         if (checkEmail) {
             return res.status(400).json("Email already Registered!");
+        }
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        const decode = jsonwebtoken.verify(token, process.env.SIGNING_KEY);
+        const user_id = decode.id;
+
+        const findUser = await User.findOne({
+            where: { id: user_id },
+        });
+
+        if (!findUser) {
+            console.log("user not Found!");
+            return res.status(400).json("user not Found!");
+        }
+
+        if (findUser) {
+            findUser.password = await hashPassword(password);
+            findUser.save();
+
+            res.status(202).json("password change succesfully!");
+        }
+    } catch (e) {
+        res.status(400).json(e);
+    }
+};
+
+exports.forgotPassword = async (req, res) => {
+    const { to, emailType } = req.body;
+    const findUser = await User.findOne({
+        where: { email: to },
+    });
+
+    if (!findUser) {
+        return res.status(400).json("Email not found!");
+    }
+
+    //   const findEmailSendingData = await EmailManage.findOne({
+    //     where: { emailtype: emailType },
+    //   });
+
+    if (findUser) {
+        const send = require("gmail-send")({
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASS,
+            to,
+            subject: "Reset password request",
+        });
+        try {
+            const genToken = await generateToken({
+                id: findUser.id,
+                email: findUser.email,
+            });
+
+            let result = `<div style="max-width: 600px; margin: 0px auto;" class="email-container bg_white" ;>
+        <div style="text-align: center">
+           <div style="background: #E8661B;height:10px;margin-bottom:10px;"></div>
+        <div style="background: #E8661B;height:2px;margin-top:10px;"></div>
+        </div>
+           <div style="padding:15px">
+              <h1 style="font-size: 23px;color: #E8661B;font-weight: bold;text-align:center;margin-top:10px">RESET PASSWORD</h1>
+              <p style="margin-bottom:10px">Hi {{username}}, </p>
+              <p style="margin-bottom:10px">We’ve received a request to reset the password for your account!
+                 <span>If you did not make this request then please ignore this email.</span>
+              </p>
+              <p style="margin-bottom:10px">Otherwise, please click this link to change your password - 
+                 <a href="https://mangoit-lms.mangoitsol.com/resetpassword/{{forgotPasswordToken}}" style="color:#22489e"> Reset Password </a></p>
+                    <span>Thanks & Regards,</span><br/>
+                    <span style="color:#E8661B">MangoIT Solutions</span><br/>
+                    <span> Email : mangoitsols@gmail.com </span>
+           </div>
+           <div style="background: #E8661B;height:2px;margin-bottom:10px;">
+           </div>
+        </div>`;
+
+            // console.log("result: ", result);
+            const { full } = await send({
+                html: `${result
+                    .replace(
+                        "{{username}}",
+                        `${capitalizeFirstLetter(findUser?.first_name)} ${findUser?.last_name
+                        }`
+                    )
+                    .replace("{{forgotPasswordToken}}", genToken)}`,
+                // files: [filepath],
+            });
+
+            // console.log(full)
+            res.status(200).json(result);
+        } catch (error) {
+            res.json(error);
         }
     }
 };
