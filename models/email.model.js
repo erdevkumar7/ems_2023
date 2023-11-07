@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         reply_by: {
             type: DataTypes.STRING,
         },
+        sender_user_id:{
+            type: DataTypes.STRING,
+        },
         content: {
             type: DataTypes.STRING,
         },

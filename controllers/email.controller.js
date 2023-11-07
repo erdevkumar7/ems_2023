@@ -16,6 +16,7 @@ exports.sendEmail = async (req, res) => {
         content,
         attachment,
         is_read,
+        sender_email_id,
         created_by,
         updated_by,
         reply_by,
@@ -51,6 +52,7 @@ exports.sendEmail = async (req, res) => {
                     created_by,
                     updated_by,
                     reply_by,
+                    sender_email_id
                 })
                 return res.status(201).json(emailCreated);
             }
@@ -82,3 +84,27 @@ exports.getEmailById = async (req, res) => {
         }
     }
 };
+
+exports.getEmailByUserId = async (req, res) => {
+    const userId = req.params.id
+    const token = req.headers.logintoken;
+
+    if (!token) {
+        res.status(401).json("Unauthorized access,login token required");
+    } else {
+        try {
+            const getEmailByUserId = await Email.findAll({
+                where: { user_id: userId }
+            })
+
+            if (getEmailByUserId) {
+                res.status(200).json(getEmailByUserId)
+            } else {
+                res.status(404).json("Email Not Found")
+            }
+        } catch (e) {
+            res.status(400).json(e);
+        }
+    }
+
+}
