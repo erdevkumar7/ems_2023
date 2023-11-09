@@ -113,8 +113,13 @@ exports.getEmailByUserId = async (req, res) => {
 
 exports.getEmailBySearch = async (req, res) => {
     const search = req.params.search;
+
     const getEmailBySearched = await Email.findOne({
         where: {   to_email: search},
     });
-    res.status(200).json(getEmailBySearched)
+    if (getEmailBySearched) {
+        res.status(200).json(getEmailBySearched)
+    } else {
+        res.status(404).json("Email Not Found")
+    }
 };
