@@ -263,10 +263,10 @@ exports.forgotPassword = async (req, res) => {
                  <span>If you did not make this request then please ignore this email.</span>
               </p>
               <p style="margin-bottom:10px">Otherwise, please click this link to change your password - 
-                 <a href="https://mangoit-lms.mangoitsol.com/resetpassword/{{forgotPasswordToken}}" style="color:#22489e"> Reset Password </a></p>
+                 <a href="http://localhost:3000/resetpassword?token={{forgotPasswordToken}}" style="color:#22489e"> Reset Password </a></p>
                     <span>Thanks & Regards,</span><br/>
-                    <span style="color:#E8661B">MangoIT Solutions</span><br/>
-                    <span> Email : mangoitsols@gmail.com </span>
+                    <span style="color:#E8661B">EmailManagement System</span><br/>
+                  
            </div>
            <div style="background: #E8661B;height:2px;margin-bottom:10px;">
            </div>
