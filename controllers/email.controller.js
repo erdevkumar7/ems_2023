@@ -4,6 +4,8 @@ const db = require("../models/index.model");
 const Email = db.Email;
 const User = db.User;
 const fs = require("fs");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 exports.sendEmail = async (req, res) => {
     const token = req.headers.logintoken;
@@ -22,9 +24,9 @@ exports.sendEmail = async (req, res) => {
         reply_by,
     } = req.body;
 
-    if (!token) {
-        res.status(401).json("Unauthorized access,login token required");
-    } else {
+    // if (!token) {
+    //     res.status(401).json("Unauthorized access,login token required");
+    // } else {
         try {
             const send = require("gmail-send")({
                 user: process.env.EMAIL,
@@ -59,7 +61,7 @@ exports.sendEmail = async (req, res) => {
         } catch (e) {
             res.status(400).json(e);
         }
-    }
+    // }
 }
 
 exports.getEmailById = async (req, res) => {
@@ -108,3 +110,11 @@ exports.getEmailByUserId = async (req, res) => {
     }
 
 }
+
+exports.getEmailBySearch = async (req, res) => {
+    const search = req.params.search;
+    const getEmailBySearched = await Email.findOne({
+        where: {   to_email: search},
+    });
+    res.status(200).json(getEmailBySearched)
+};
