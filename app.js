@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRouter = require("./routes/user.route");
 const emailRouter = require("./routes/email.route");
-// const nodeCron = require("node-cron");
+
 const app = express();
 const port = process.env.PORT;
 const path = require('path');
